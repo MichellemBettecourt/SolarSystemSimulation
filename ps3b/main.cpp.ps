@@ -1,0 +1,789 @@
+%!PS-Adobe-3.0
+%%BoundingBox: 50 50 562 742
+%%Title: Enscript Output
+%%Creator: GNU Enscript 1.6.5.90
+%%CreationDate: Fri Dec  8 19:29:20 2017
+%%Orientation: Portrait
+%%Pages: (atend)
+%%DocumentMedia: Letter 612 792 0 () ()
+%%DocumentNeededResources: (atend)
+%%EndComments
+%%BeginProlog
+%%BeginResource: procset Enscript-Prolog 1.6.5 90
+%
+% Procedures.
+%
+
+/_S {	% save current state
+  /_s save def
+} def
+/_R {	% restore from saved state
+  _s restore
+} def
+
+/S {	% showpage protecting gstate
+  gsave
+  showpage
+  grestore
+} bind def
+
+/MF {	% fontname newfontname -> -	make a new encoded font
+  /newfontname exch def
+  /fontname exch def
+
+  /fontdict fontname findfont def
+  /newfont fontdict maxlength dict def
+
+  fontdict {
+    exch
+    dup /FID eq {
+      % skip FID pair
+      pop pop
+    } {
+      % copy to the new font dictionary
+      exch newfont 3 1 roll put
+    } ifelse
+  } forall
+
+  newfont /FontName newfontname put
+
+  % insert only valid encoding vectors
+  encoding_vector length 256 eq {
+    newfont /Encoding encoding_vector put
+  } if
+
+  newfontname newfont definefont pop
+} def
+
+/MF_PS { % fontname newfontname -> -	make a new font preserving its enc
+  /newfontname exch def
+  /fontname exch def
+
+  /fontdict fontname findfont def
+  /newfont fontdict maxlength dict def
+
+  fontdict {
+    exch
+    dup /FID eq {
+      % skip FID pair
+      pop pop
+    } {
+      % copy to the new font dictionary
+      exch newfont 3 1 roll put
+    } ifelse
+  } forall
+
+  newfont /FontName newfontname put
+
+  newfontname newfont definefont pop
+} def
+
+/SF { % fontname width height -> -	set a new font
+  /height exch def
+  /width exch def
+
+  findfont
+  [width 0 0 height 0 0] makefont setfont
+} def
+
+/SUF { % fontname width height -> -	set a new user font
+  /height exch def
+  /width exch def
+
+  /F-gs-user-font MF
+  /F-gs-user-font width height SF
+} def
+
+/SUF_PS { % fontname width height -> -	set a new user font preserving its enc
+  /height exch def
+  /width exch def
+
+  /F-gs-user-font MF_PS
+  /F-gs-user-font width height SF
+} def
+
+/M {moveto} bind def
+/s {show} bind def
+
+/Box {	% x y w h -> -			define box path
+  /d_h exch def /d_w exch def /d_y exch def /d_x exch def
+  d_x d_y  moveto
+  d_w 0 rlineto
+  0 d_h rlineto
+  d_w neg 0 rlineto
+  closepath
+} def
+
+/bgs {	% x y height blskip gray str -> -	show string with bg color
+  /str exch def
+  /gray exch def
+  /blskip exch def
+  /height exch def
+  /y exch def
+  /x exch def
+
+  gsave
+    x y blskip sub str stringwidth pop height Box
+    gray setgray
+    fill
+  grestore
+  x y M str s
+} def
+
+/bgcs { % x y height blskip red green blue str -> -  show string with bg color
+  /str exch def
+  /blue exch def
+  /green exch def
+  /red exch def
+  /blskip exch def
+  /height exch def
+  /y exch def
+  /x exch def
+
+  gsave
+    x y blskip sub str stringwidth pop height Box
+    red green blue setrgbcolor
+    fill
+  grestore
+  x y M str s
+} def
+
+% Highlight bars.
+/highlight_bars {	% nlines lineheight output_y_margin gray -> -
+  gsave
+    setgray
+    /ymarg exch def
+    /lineheight exch def
+    /nlines exch def
+
+    % This 2 is just a magic number to sync highlight lines to text.
+    0 d_header_y ymarg sub 2 sub translate
+
+    /cw d_output_w cols div def
+    /nrows d_output_h ymarg 2 mul sub lineheight div cvi def
+
+    % for each column
+    0 1 cols 1 sub {
+      cw mul /xp exch def
+
+      % for each rows
+      0 1 nrows 1 sub {
+        /rn exch def
+        rn lineheight mul neg /yp exch def
+        rn nlines idiv 2 mod 0 eq {
+	  % Draw highlight bar.  4 is just a magic indentation.
+	  xp 4 add yp cw 8 sub lineheight neg Box fill
+	} if
+      } for
+    } for
+
+  grestore
+} def
+
+% Line highlight bar.
+/line_highlight {	% x y width height gray -> -
+  gsave
+    /gray exch def
+    Box gray setgray fill
+  grestore
+} def
+
+% Column separator lines.
+/column_lines {
+  gsave
+    .1 setlinewidth
+    0 d_footer_h translate
+    /cw d_output_w cols div def
+    1 1 cols 1 sub {
+      cw mul 0 moveto
+      0 d_output_h rlineto stroke
+    } for
+  grestore
+} def
+
+% Column borders.
+/column_borders {
+  gsave
+    .1 setlinewidth
+    0 d_footer_h moveto
+    0 d_output_h rlineto
+    d_output_w 0 rlineto
+    0 d_output_h neg rlineto
+    closepath stroke
+  grestore
+} def
+
+% Do the actual underlay drawing
+/draw_underlay {
+  ul_style 0 eq {
+    ul_str true charpath stroke
+  } {
+    ul_str show
+  } ifelse
+} def
+
+% Underlay
+/underlay {	% - -> -
+  gsave
+    0 d_page_h translate
+    d_page_h neg d_page_w atan rotate
+
+    ul_gray setgray
+    ul_font setfont
+    /dw d_page_h dup mul d_page_w dup mul add sqrt def
+    ul_str stringwidth pop dw exch sub 2 div ul_h_ptsize -2 div moveto
+    draw_underlay
+  grestore
+} def
+
+/user_underlay {	% - -> -
+  gsave
+    ul_x ul_y translate
+    ul_angle rotate
+    ul_gray setgray
+    ul_font setfont
+    0 0 ul_h_ptsize 2 div sub moveto
+    draw_underlay
+  grestore
+} def
+
+% Page prefeed
+/page_prefeed {		% bool -> -
+  statusdict /prefeed known {
+    statusdict exch /prefeed exch put
+  } {
+    pop
+  } ifelse
+} def
+
+% Wrapped line markers
+/wrapped_line_mark {	% x y charwith charheight type -> -
+  /type exch def
+  /h exch def
+  /w exch def
+  /y exch def
+  /x exch def
+
+  type 2 eq {
+    % Black boxes (like TeX does)
+    gsave
+      0 setlinewidth
+      x w 4 div add y M
+      0 h rlineto w 2 div 0 rlineto 0 h neg rlineto
+      closepath fill
+    grestore
+  } {
+    type 3 eq {
+      % Small arrows
+      gsave
+        .2 setlinewidth
+        x w 2 div add y h 2 div add M
+        w 4 div 0 rlineto
+        x w 4 div add y lineto stroke
+
+        x w 4 div add w 8 div add y h 4 div add M
+        x w 4 div add y lineto
+	w 4 div h 8 div rlineto stroke
+      grestore
+    } {
+      % do nothing
+    } ifelse
+  } ifelse
+} def
+
+% EPSF import.
+
+/BeginEPSF {
+  /b4_Inc_state save def    		% Save state for cleanup
+  /dict_count countdictstack def	% Count objects on dict stack
+  /op_count count 1 sub def		% Count objects on operand stack
+  userdict begin
+  /showpage { } def
+  0 setgray 0 setlinecap
+  1 setlinewidth 0 setlinejoin
+  10 setmiterlimit [ ] 0 setdash newpath
+  /languagelevel where {
+    pop languagelevel
+    1 ne {
+      false setstrokeadjust false setoverprint
+    } if
+  } if
+} bind def
+
+/EndEPSF {
+  count op_count sub { pos } repeat	% Clean up stacks
+  countdictstack dict_count sub { end } repeat
+  b4_Inc_state restore
+} bind def
+
+% Check PostScript language level.
+/languagelevel where {
+  pop /gs_languagelevel languagelevel def
+} {
+  /gs_languagelevel 1 def
+} ifelse
+%%EndResource
+%%BeginResource: procset Enscript-Encoding-88591 1.6.5 90
+/encoding_vector [
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/space        	/exclam       	/quotedbl     	/numbersign   	
+/dollar       	/percent      	/ampersand    	/quoteright   	
+/parenleft    	/parenright   	/asterisk     	/plus         	
+/comma        	/hyphen       	/period       	/slash        	
+/zero         	/one          	/two          	/three        	
+/four         	/five         	/six          	/seven        	
+/eight        	/nine         	/colon        	/semicolon    	
+/less         	/equal        	/greater      	/question     	
+/at           	/A            	/B            	/C            	
+/D            	/E            	/F            	/G            	
+/H            	/I            	/J            	/K            	
+/L            	/M            	/N            	/O            	
+/P            	/Q            	/R            	/S            	
+/T            	/U            	/V            	/W            	
+/X            	/Y            	/Z            	/bracketleft  	
+/backslash    	/bracketright 	/asciicircum  	/underscore   	
+/quoteleft    	/a            	/b            	/c            	
+/d            	/e            	/f            	/g            	
+/h            	/i            	/j            	/k            	
+/l            	/m            	/n            	/o            	
+/p            	/q            	/r            	/s            	
+/t            	/u            	/v            	/w            	
+/x            	/y            	/z            	/braceleft    	
+/bar          	/braceright   	/tilde        	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/space        	/exclamdown   	/cent         	/sterling     	
+/currency     	/yen          	/brokenbar    	/section      	
+/dieresis     	/copyright    	/ordfeminine  	/guillemotleft	
+/logicalnot   	/hyphen       	/registered   	/macron       	
+/degree       	/plusminus    	/twosuperior  	/threesuperior	
+/acute        	/mu           	/paragraph    	/bullet       	
+/cedilla      	/onesuperior  	/ordmasculine 	/guillemotright	
+/onequarter   	/onehalf      	/threequarters	/questiondown 	
+/Agrave       	/Aacute       	/Acircumflex  	/Atilde       	
+/Adieresis    	/Aring        	/AE           	/Ccedilla     	
+/Egrave       	/Eacute       	/Ecircumflex  	/Edieresis    	
+/Igrave       	/Iacute       	/Icircumflex  	/Idieresis    	
+/Eth          	/Ntilde       	/Ograve       	/Oacute       	
+/Ocircumflex  	/Otilde       	/Odieresis    	/multiply     	
+/Oslash       	/Ugrave       	/Uacute       	/Ucircumflex  	
+/Udieresis    	/Yacute       	/Thorn        	/germandbls   	
+/agrave       	/aacute       	/acircumflex  	/atilde       	
+/adieresis    	/aring        	/ae           	/ccedilla     	
+/egrave       	/eacute       	/ecircumflex  	/edieresis    	
+/igrave       	/iacute       	/icircumflex  	/idieresis    	
+/eth          	/ntilde       	/ograve       	/oacute       	
+/ocircumflex  	/otilde       	/odieresis    	/divide       	
+/oslash       	/ugrave       	/uacute       	/ucircumflex  	
+/udieresis    	/yacute       	/thorn        	/ydieresis    	
+] def
+%%EndResource
+%%EndProlog
+%%BeginSetup
+%%IncludeResource: font Courier-Bold
+%%IncludeResource: font Courier
+/HFpt_w 10 def
+/HFpt_h 10 def
+/Courier-Bold /HF-gs-font MF
+/HF /HF-gs-font findfont [HFpt_w 0 0 HFpt_h 0 0] makefont def
+/Courier /F-gs-font MF
+/F-gs-font 10 10 SF
+/#copies 1 def
+% Pagedevice definitions:
+gs_languagelevel 1 gt {
+  <<
+    /PageSize [612 792] 
+  >> setpagedevice
+} if
+%%BeginResource: procset Enscript-Header-simple 1.6.5 90
+
+/do_header {	% print default simple header
+  gsave
+    d_header_x d_header_y HFpt_h 3 div add translate
+
+    HF setfont
+    user_header_p {
+      5 0 moveto user_header_left_str show
+
+      d_header_w user_header_center_str stringwidth pop sub 2 div
+      0 moveto user_header_center_str show
+
+      d_header_w user_header_right_str stringwidth pop sub 5 sub
+      0 moveto user_header_right_str show
+    } {
+      5 0 moveto fname show
+      45 0 rmoveto fmodstr show
+      45 0 rmoveto pagenumstr show
+    } ifelse
+
+  grestore
+} def
+%%EndResource
+/d_page_w 512 def
+/d_page_h 692 def
+/d_header_x 0 def
+/d_header_y 677 def
+/d_header_w 512 def
+/d_header_h 15 def
+/d_footer_x 0 def
+/d_footer_y 0 def
+/d_footer_w 512 def
+/d_footer_h 0 def
+/d_output_w 512 def
+/d_output_h 677 def
+/cols 1 def
+%%EndSetup
+%%Page: (1) 1
+%%BeginPageSetup
+_S
+50 50 translate
+/pagenum 1 def
+/fname (main.cpp) def
+/fdir (.) def
+/ftail (main.cpp) def
+% User defined strings:
+/fmodstr (Mon Oct 16 18:56:58 2017) def
+/pagenumstr (1) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+30 664 M (1:) s
+48 664 M
+(#include <sstream>) s
+30 653 M (2:) s
+48 653 M
+(#include <iomanip>) s
+30 642 M (3:) s
+48 642 M
+(#include <SFML/Audio.hpp>) s
+30 631 M (4:) s
+48 631 M
+(#include "body.hpp") s
+30 620 M (5:) s
+30 609 M (6:) s
+48 609 M
+(int main\(int argc, char* argv[]\)) s
+30 598 M (7:) s
+48 598 M
+({) s
+30 587 M (8:) s
+48 587 M
+(  if \(argc < 3\)) s
+30 576 M (9:) s
+48 576 M
+(  {) s
+24 565 M (10:) s
+48 565 M
+(    std::cout << "Please enter a time and delta time" << std::endl;) s
+24 554 M (11:) s
+48 554 M
+(    return -1;) s
+24 543 M (12:) s
+48 543 M
+(  }) s
+24 532 M (13:) s
+48 532 M
+(  std::vector<Body> planets;) s
+24 521 M (14:) s
+48 521 M
+(  double window_size = 500.0;) s
+24 510 M (15:) s
+48 510 M
+(  double time = atoi\(argv[1]\);) s
+24 499 M (16:) s
+48 499 M
+(  double delta_time = atoi\(argv[2]\);) s
+24 488 M (17:) s
+48 488 M
+(  sf::RenderWindow window\(sf::VideoMode\(window_size, window_size\), "Window"\)) s
+5 477 M
+(;) s
+24 466 M (18:) s
+48 466 M
+(  window.setFramerateLimit\(40\);) s
+24 455 M (19:) s
+48 455 M
+(  std::string data;) s
+24 444 M (20:) s
+48 444 M
+(  int i = 0;) s
+24 433 M (21:) s
+48 433 M
+(  double scale;) s
+24 422 M (22:) s
+48 422 M
+(  while \(std::getline\(std::cin, data\)\)) s
+24 411 M (23:) s
+48 411 M
+(  {) s
+24 400 M (24:) s
+48 400 M
+(    switch \(i\)) s
+24 389 M (25:) s
+48 389 M
+(    {) s
+24 378 M (26:) s
+48 378 M
+(      case \(0\):) s
+24 367 M (27:) s
+48 367 M
+(        break;) s
+24 356 M (28:) s
+48 356 M
+(      case \(1\):) s
+24 345 M (29:) s
+48 345 M
+(        {) s
+24 334 M (30:) s
+48 334 M
+(          scale = atof\(data.c_str\(\)\);) s
+24 323 M (31:) s
+48 323 M
+(          Body planet\(window_size, scale\);) s
+24 312 M (32:) s
+48 312 M
+(          std::cin >> planet;) s
+24 301 M (33:) s
+48 301 M
+(          planets.push_back\(planet\);) s
+24 290 M (34:) s
+48 290 M
+(          i++;) s
+24 279 M (35:) s
+48 279 M
+(        }) s
+24 268 M (36:) s
+48 268 M
+(        break;) s
+24 257 M (37:) s
+48 257 M
+(      case \(7\):) s
+24 246 M (38:) s
+48 246 M
+(        break;) s
+24 235 M (39:) s
+48 235 M
+(      case \(8\):) s
+24 224 M (40:) s
+48 224 M
+(        break;) s
+24 213 M (41:) s
+48 213 M
+(      case\(9\):) s
+24 202 M (42:) s
+48 202 M
+(        break;) s
+24 191 M (43:) s
+48 191 M
+(      default:) s
+24 180 M (44:) s
+48 180 M
+(        {) s
+24 169 M (45:) s
+48 169 M
+(          Body planet\(window_size, scale\);) s
+24 158 M (46:) s
+48 158 M
+(          std::cin >> planet;) s
+24 147 M (47:) s
+48 147 M
+(          planets.push_back\(planet\);) s
+24 136 M (48:) s
+48 136 M
+(        }) s
+24 125 M (49:) s
+48 125 M
+(        break;) s
+24 114 M (50:) s
+48 114 M
+(      }) s
+24 103 M (51:) s
+48 103 M
+(    i++;) s
+24 92 M (52:) s
+48 92 M
+(  }) s
+24 81 M (53:) s
+24 70 M (54:) s
+48 70 M
+(  sf::Clock clock;) s
+24 59 M (55:) s
+48 59 M
+(  int timer = 0;) s
+24 48 M (56:) s
+48 48 M
+(  sf::Music music;) s
+24 37 M (57:) s
+48 37 M
+(  if \(!music.openFromFile\("2001.wav"\)\)) s
+24 26 M (58:) s
+48 26 M
+(  {) s
+24 15 M (59:) s
+48 15 M
+(    std::cout << "Failed to load music." << std::endl;) s
+24 4 M (60:) s
+48 4 M
+(  }) s
+_R
+S
+%%Page: (2) 2
+%%BeginPageSetup
+_S
+50 50 translate
+/pagenum 2 def
+/fname (main.cpp) def
+/fdir (.) def
+/ftail (main.cpp) def
+% User defined strings:
+/fmodstr (Mon Oct 16 18:56:58 2017) def
+/pagenumstr (2) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+24 664 M (61:) s
+48 664 M
+(  music.play\(\);) s
+24 653 M (62:) s
+48 653 M
+(  while \(window.isOpen\(\)\)) s
+24 642 M (63:) s
+48 642 M
+(  {) s
+24 631 M (64:) s
+48 631 M
+(      if \(timer >= time\)) s
+24 620 M (65:) s
+48 620 M
+(      {) s
+24 609 M (66:) s
+48 609 M
+(        break;) s
+24 598 M (67:) s
+48 598 M
+(      }) s
+24 587 M (68:) s
+48 587 M
+(      sf::Event event;) s
+24 576 M (69:) s
+48 576 M
+(      while \(window.pollEvent\(event\)\)) s
+24 565 M (70:) s
+48 565 M
+(      {) s
+24 554 M (71:) s
+48 554 M
+(        if \(event.type == sf::Event::Closed\)) s
+24 543 M (72:) s
+48 543 M
+(          window.close\(\);) s
+24 532 M (73:) s
+48 532 M
+(      }) s
+24 521 M (74:) s
+48 521 M
+(      window.clear\(\);) s
+24 510 M (75:) s
+48 510 M
+(      planets[0].step\(planets, 0, delta_time\);) s
+24 499 M (76:) s
+48 499 M
+(      for \(unsigned int i = 0; i < planets.size\(\); i++\)) s
+24 488 M (77:) s
+48 488 M
+(      {) s
+24 477 M (78:) s
+48 477 M
+(        window.draw\(planets[i]\);) s
+24 466 M (79:) s
+48 466 M
+(      }) s
+24 455 M (80:) s
+48 455 M
+(      window.display\(\);) s
+24 444 M (81:) s
+48 444 M
+(      timer += delta_time;) s
+24 433 M (82:) s
+48 433 M
+(  }) s
+24 422 M (83:) s
+24 411 M (84:) s
+48 411 M
+(  std::cout << "Final State of Universe Output:" << std::endl;) s
+24 400 M (85:) s
+48 400 M
+(  for \(unsigned int u = 0; u < planets.size\(\); u++\)) s
+24 389 M (86:) s
+48 389 M
+(  {) s
+24 378 M (87:) s
+48 378 M
+(    std::cout << " ") s
+24 367 M (88:) s
+48 367 M
+(    << planets[u].get_x_coordinate\(\)) s
+24 356 M (89:) s
+48 356 M
+(    << "  ") s
+24 345 M (90:) s
+48 345 M
+(    << planets[u].get_y_coordinate\(\)) s
+24 334 M (91:) s
+48 334 M
+(    << "  ") s
+24 323 M (92:) s
+48 323 M
+(    << planets[u].get_x_velocity\(\)) s
+24 312 M (93:) s
+48 312 M
+(    << "  ") s
+24 301 M (94:) s
+48 301 M
+(    << planets[u].get_y_velocity\(\)) s
+24 290 M (95:) s
+48 290 M
+(    << "  ") s
+24 279 M (96:) s
+48 279 M
+(    << planets[u].get_mass\(\)) s
+24 268 M (97:) s
+48 268 M
+(    << "  ") s
+24 257 M (98:) s
+48 257 M
+(    << planets[u].get_filename\(\)) s
+24 246 M (99:) s
+48 246 M
+(    << std::endl;) s
+18 235 M (100:) s
+48 235 M
+(  }) s
+18 224 M (101:) s
+18 213 M (102:) s
+48 213 M
+(  return 0;) s
+18 202 M (103:) s
+48 202 M
+(}) s
+_R
+S
+%%Trailer
+%%Pages: 2
+%%DocumentNeededResources: font Courier-Bold Courier 
+%%EOF

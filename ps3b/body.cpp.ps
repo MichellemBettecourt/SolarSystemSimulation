@@ -1,0 +1,829 @@
+%!PS-Adobe-3.0
+%%BoundingBox: 50 50 562 742
+%%Title: Enscript Output
+%%Creator: GNU Enscript 1.6.5.90
+%%CreationDate: Fri Dec  8 19:28:22 2017
+%%Orientation: Portrait
+%%Pages: (atend)
+%%DocumentMedia: Letter 612 792 0 () ()
+%%DocumentNeededResources: (atend)
+%%EndComments
+%%BeginProlog
+%%BeginResource: procset Enscript-Prolog 1.6.5 90
+%
+% Procedures.
+%
+
+/_S {	% save current state
+  /_s save def
+} def
+/_R {	% restore from saved state
+  _s restore
+} def
+
+/S {	% showpage protecting gstate
+  gsave
+  showpage
+  grestore
+} bind def
+
+/MF {	% fontname newfontname -> -	make a new encoded font
+  /newfontname exch def
+  /fontname exch def
+
+  /fontdict fontname findfont def
+  /newfont fontdict maxlength dict def
+
+  fontdict {
+    exch
+    dup /FID eq {
+      % skip FID pair
+      pop pop
+    } {
+      % copy to the new font dictionary
+      exch newfont 3 1 roll put
+    } ifelse
+  } forall
+
+  newfont /FontName newfontname put
+
+  % insert only valid encoding vectors
+  encoding_vector length 256 eq {
+    newfont /Encoding encoding_vector put
+  } if
+
+  newfontname newfont definefont pop
+} def
+
+/MF_PS { % fontname newfontname -> -	make a new font preserving its enc
+  /newfontname exch def
+  /fontname exch def
+
+  /fontdict fontname findfont def
+  /newfont fontdict maxlength dict def
+
+  fontdict {
+    exch
+    dup /FID eq {
+      % skip FID pair
+      pop pop
+    } {
+      % copy to the new font dictionary
+      exch newfont 3 1 roll put
+    } ifelse
+  } forall
+
+  newfont /FontName newfontname put
+
+  newfontname newfont definefont pop
+} def
+
+/SF { % fontname width height -> -	set a new font
+  /height exch def
+  /width exch def
+
+  findfont
+  [width 0 0 height 0 0] makefont setfont
+} def
+
+/SUF { % fontname width height -> -	set a new user font
+  /height exch def
+  /width exch def
+
+  /F-gs-user-font MF
+  /F-gs-user-font width height SF
+} def
+
+/SUF_PS { % fontname width height -> -	set a new user font preserving its enc
+  /height exch def
+  /width exch def
+
+  /F-gs-user-font MF_PS
+  /F-gs-user-font width height SF
+} def
+
+/M {moveto} bind def
+/s {show} bind def
+
+/Box {	% x y w h -> -			define box path
+  /d_h exch def /d_w exch def /d_y exch def /d_x exch def
+  d_x d_y  moveto
+  d_w 0 rlineto
+  0 d_h rlineto
+  d_w neg 0 rlineto
+  closepath
+} def
+
+/bgs {	% x y height blskip gray str -> -	show string with bg color
+  /str exch def
+  /gray exch def
+  /blskip exch def
+  /height exch def
+  /y exch def
+  /x exch def
+
+  gsave
+    x y blskip sub str stringwidth pop height Box
+    gray setgray
+    fill
+  grestore
+  x y M str s
+} def
+
+/bgcs { % x y height blskip red green blue str -> -  show string with bg color
+  /str exch def
+  /blue exch def
+  /green exch def
+  /red exch def
+  /blskip exch def
+  /height exch def
+  /y exch def
+  /x exch def
+
+  gsave
+    x y blskip sub str stringwidth pop height Box
+    red green blue setrgbcolor
+    fill
+  grestore
+  x y M str s
+} def
+
+% Highlight bars.
+/highlight_bars {	% nlines lineheight output_y_margin gray -> -
+  gsave
+    setgray
+    /ymarg exch def
+    /lineheight exch def
+    /nlines exch def
+
+    % This 2 is just a magic number to sync highlight lines to text.
+    0 d_header_y ymarg sub 2 sub translate
+
+    /cw d_output_w cols div def
+    /nrows d_output_h ymarg 2 mul sub lineheight div cvi def
+
+    % for each column
+    0 1 cols 1 sub {
+      cw mul /xp exch def
+
+      % for each rows
+      0 1 nrows 1 sub {
+        /rn exch def
+        rn lineheight mul neg /yp exch def
+        rn nlines idiv 2 mod 0 eq {
+	  % Draw highlight bar.  4 is just a magic indentation.
+	  xp 4 add yp cw 8 sub lineheight neg Box fill
+	} if
+      } for
+    } for
+
+  grestore
+} def
+
+% Line highlight bar.
+/line_highlight {	% x y width height gray -> -
+  gsave
+    /gray exch def
+    Box gray setgray fill
+  grestore
+} def
+
+% Column separator lines.
+/column_lines {
+  gsave
+    .1 setlinewidth
+    0 d_footer_h translate
+    /cw d_output_w cols div def
+    1 1 cols 1 sub {
+      cw mul 0 moveto
+      0 d_output_h rlineto stroke
+    } for
+  grestore
+} def
+
+% Column borders.
+/column_borders {
+  gsave
+    .1 setlinewidth
+    0 d_footer_h moveto
+    0 d_output_h rlineto
+    d_output_w 0 rlineto
+    0 d_output_h neg rlineto
+    closepath stroke
+  grestore
+} def
+
+% Do the actual underlay drawing
+/draw_underlay {
+  ul_style 0 eq {
+    ul_str true charpath stroke
+  } {
+    ul_str show
+  } ifelse
+} def
+
+% Underlay
+/underlay {	% - -> -
+  gsave
+    0 d_page_h translate
+    d_page_h neg d_page_w atan rotate
+
+    ul_gray setgray
+    ul_font setfont
+    /dw d_page_h dup mul d_page_w dup mul add sqrt def
+    ul_str stringwidth pop dw exch sub 2 div ul_h_ptsize -2 div moveto
+    draw_underlay
+  grestore
+} def
+
+/user_underlay {	% - -> -
+  gsave
+    ul_x ul_y translate
+    ul_angle rotate
+    ul_gray setgray
+    ul_font setfont
+    0 0 ul_h_ptsize 2 div sub moveto
+    draw_underlay
+  grestore
+} def
+
+% Page prefeed
+/page_prefeed {		% bool -> -
+  statusdict /prefeed known {
+    statusdict exch /prefeed exch put
+  } {
+    pop
+  } ifelse
+} def
+
+% Wrapped line markers
+/wrapped_line_mark {	% x y charwith charheight type -> -
+  /type exch def
+  /h exch def
+  /w exch def
+  /y exch def
+  /x exch def
+
+  type 2 eq {
+    % Black boxes (like TeX does)
+    gsave
+      0 setlinewidth
+      x w 4 div add y M
+      0 h rlineto w 2 div 0 rlineto 0 h neg rlineto
+      closepath fill
+    grestore
+  } {
+    type 3 eq {
+      % Small arrows
+      gsave
+        .2 setlinewidth
+        x w 2 div add y h 2 div add M
+        w 4 div 0 rlineto
+        x w 4 div add y lineto stroke
+
+        x w 4 div add w 8 div add y h 4 div add M
+        x w 4 div add y lineto
+	w 4 div h 8 div rlineto stroke
+      grestore
+    } {
+      % do nothing
+    } ifelse
+  } ifelse
+} def
+
+% EPSF import.
+
+/BeginEPSF {
+  /b4_Inc_state save def    		% Save state for cleanup
+  /dict_count countdictstack def	% Count objects on dict stack
+  /op_count count 1 sub def		% Count objects on operand stack
+  userdict begin
+  /showpage { } def
+  0 setgray 0 setlinecap
+  1 setlinewidth 0 setlinejoin
+  10 setmiterlimit [ ] 0 setdash newpath
+  /languagelevel where {
+    pop languagelevel
+    1 ne {
+      false setstrokeadjust false setoverprint
+    } if
+  } if
+} bind def
+
+/EndEPSF {
+  count op_count sub { pos } repeat	% Clean up stacks
+  countdictstack dict_count sub { end } repeat
+  b4_Inc_state restore
+} bind def
+
+% Check PostScript language level.
+/languagelevel where {
+  pop /gs_languagelevel languagelevel def
+} {
+  /gs_languagelevel 1 def
+} ifelse
+%%EndResource
+%%BeginResource: procset Enscript-Encoding-88591 1.6.5 90
+/encoding_vector [
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/space        	/exclam       	/quotedbl     	/numbersign   	
+/dollar       	/percent      	/ampersand    	/quoteright   	
+/parenleft    	/parenright   	/asterisk     	/plus         	
+/comma        	/hyphen       	/period       	/slash        	
+/zero         	/one          	/two          	/three        	
+/four         	/five         	/six          	/seven        	
+/eight        	/nine         	/colon        	/semicolon    	
+/less         	/equal        	/greater      	/question     	
+/at           	/A            	/B            	/C            	
+/D            	/E            	/F            	/G            	
+/H            	/I            	/J            	/K            	
+/L            	/M            	/N            	/O            	
+/P            	/Q            	/R            	/S            	
+/T            	/U            	/V            	/W            	
+/X            	/Y            	/Z            	/bracketleft  	
+/backslash    	/bracketright 	/asciicircum  	/underscore   	
+/quoteleft    	/a            	/b            	/c            	
+/d            	/e            	/f            	/g            	
+/h            	/i            	/j            	/k            	
+/l            	/m            	/n            	/o            	
+/p            	/q            	/r            	/s            	
+/t            	/u            	/v            	/w            	
+/x            	/y            	/z            	/braceleft    	
+/bar          	/braceright   	/tilde        	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/space        	/exclamdown   	/cent         	/sterling     	
+/currency     	/yen          	/brokenbar    	/section      	
+/dieresis     	/copyright    	/ordfeminine  	/guillemotleft	
+/logicalnot   	/hyphen       	/registered   	/macron       	
+/degree       	/plusminus    	/twosuperior  	/threesuperior	
+/acute        	/mu           	/paragraph    	/bullet       	
+/cedilla      	/onesuperior  	/ordmasculine 	/guillemotright	
+/onequarter   	/onehalf      	/threequarters	/questiondown 	
+/Agrave       	/Aacute       	/Acircumflex  	/Atilde       	
+/Adieresis    	/Aring        	/AE           	/Ccedilla     	
+/Egrave       	/Eacute       	/Ecircumflex  	/Edieresis    	
+/Igrave       	/Iacute       	/Icircumflex  	/Idieresis    	
+/Eth          	/Ntilde       	/Ograve       	/Oacute       	
+/Ocircumflex  	/Otilde       	/Odieresis    	/multiply     	
+/Oslash       	/Ugrave       	/Uacute       	/Ucircumflex  	
+/Udieresis    	/Yacute       	/Thorn        	/germandbls   	
+/agrave       	/aacute       	/acircumflex  	/atilde       	
+/adieresis    	/aring        	/ae           	/ccedilla     	
+/egrave       	/eacute       	/ecircumflex  	/edieresis    	
+/igrave       	/iacute       	/icircumflex  	/idieresis    	
+/eth          	/ntilde       	/ograve       	/oacute       	
+/ocircumflex  	/otilde       	/odieresis    	/divide       	
+/oslash       	/ugrave       	/uacute       	/ucircumflex  	
+/udieresis    	/yacute       	/thorn        	/ydieresis    	
+] def
+%%EndResource
+%%EndProlog
+%%BeginSetup
+%%IncludeResource: font Courier-Bold
+%%IncludeResource: font Courier
+/HFpt_w 10 def
+/HFpt_h 10 def
+/Courier-Bold /HF-gs-font MF
+/HF /HF-gs-font findfont [HFpt_w 0 0 HFpt_h 0 0] makefont def
+/Courier /F-gs-font MF
+/F-gs-font 10 10 SF
+/#copies 1 def
+% Pagedevice definitions:
+gs_languagelevel 1 gt {
+  <<
+    /PageSize [612 792] 
+  >> setpagedevice
+} if
+%%BeginResource: procset Enscript-Header-simple 1.6.5 90
+
+/do_header {	% print default simple header
+  gsave
+    d_header_x d_header_y HFpt_h 3 div add translate
+
+    HF setfont
+    user_header_p {
+      5 0 moveto user_header_left_str show
+
+      d_header_w user_header_center_str stringwidth pop sub 2 div
+      0 moveto user_header_center_str show
+
+      d_header_w user_header_right_str stringwidth pop sub 5 sub
+      0 moveto user_header_right_str show
+    } {
+      5 0 moveto fname show
+      45 0 rmoveto fmodstr show
+      45 0 rmoveto pagenumstr show
+    } ifelse
+
+  grestore
+} def
+%%EndResource
+/d_page_w 512 def
+/d_page_h 692 def
+/d_header_x 0 def
+/d_header_y 677 def
+/d_header_w 512 def
+/d_header_h 15 def
+/d_footer_x 0 def
+/d_footer_y 0 def
+/d_footer_w 512 def
+/d_footer_h 0 def
+/d_output_w 512 def
+/d_output_h 677 def
+/cols 1 def
+%%EndSetup
+%%Page: (1) 1
+%%BeginPageSetup
+_S
+50 50 translate
+/pagenum 1 def
+/fname (body.cpp) def
+/fdir (.) def
+/ftail (body.cpp) def
+% User defined strings:
+/fmodstr (Mon Oct 16 18:51:43 2017) def
+/pagenumstr (1) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+30 664 M (1:) s
+48 664 M
+(#include <vector>) s
+30 653 M (2:) s
+48 653 M
+(#include <math.h>) s
+30 642 M (3:) s
+48 642 M
+(#include "body.hpp") s
+30 631 M (4:) s
+30 620 M (5:) s
+48 620 M
+(const double GRAVITATIONAL_CONSTANT = 6.67 * pow\(10.0, -11.0\);) s
+30 609 M (6:) s
+30 598 M (7:) s
+48 598 M
+(double Body::get_hypotenuse\(double other_x, double other_y\)) s
+30 587 M (8:) s
+48 587 M
+({) s
+30 576 M (9:) s
+48 576 M
+(  double hypotenuse = sqrt\(pow\(x_coordinate-other_x,2\)+pow\(y_coordinate-othe) s
+5 565 M
+(r_y, 2\)\);) s
+24 554 M (10:) s
+24 543 M (11:) s
+48 543 M
+(  return hypotenuse;) s
+24 532 M (12:) s
+48 532 M
+(}) s
+24 521 M (13:) s
+24 510 M (14:) s
+48 510 M
+(double Body::get_gravitational_force\(double mass1, double mass2, double hypo) s
+5 499 M
+(tenuse\)) s
+24 488 M (15:) s
+48 488 M
+({) s
+24 477 M (16:) s
+48 477 M
+(  double force = \(GRAVITATIONAL_CONSTANT * \(mass1 * mass2\)\)/pow\(hypotenuse, ) s
+5 466 M
+(2\);) s
+24 455 M (17:) s
+24 444 M (18:) s
+48 444 M
+(  return force;) s
+24 433 M (19:) s
+48 433 M
+(}) s
+24 422 M (20:) s
+24 411 M (21:) s
+48 411 M
+(double Body::get_netforce\(double hypotenuse, double gravitational_force, dou) s
+5 400 M
+(ble this_coordinate, double other_coordinate\)) s
+24 389 M (22:) s
+48 389 M
+({) s
+24 378 M (23:) s
+48 378 M
+(  double netforce = gravitational_force*\(\(this_coordinate-other_coordinate\)/) s
+5 367 M
+(hypotenuse\);) s
+24 356 M (24:) s
+24 345 M (25:) s
+48 345 M
+(  return netforce;) s
+24 334 M (26:) s
+48 334 M
+(}) s
+24 323 M (27:) s
+24 312 M (28:) s
+48 312 M
+(Body::Body\(double w_size, double s, double x_pos, double y_pos, double x_vel) s
+5 301 M
+(, double y_vel, double grams, std::string image_name\)) s
+24 290 M (29:) s
+48 290 M
+({) s
+24 279 M (30:) s
+48 279 M
+(  x_coordinate = x_pos;) s
+24 268 M (31:) s
+48 268 M
+(  y_coordinate = y_pos;) s
+24 257 M (32:) s
+48 257 M
+(  x_velocity = x_vel;) s
+24 246 M (33:) s
+48 246 M
+(  y_velocity = y_vel;) s
+24 235 M (34:) s
+48 235 M
+(  mass = grams;) s
+24 224 M (35:) s
+48 224 M
+(  filename = image_name;) s
+24 213 M (36:) s
+48 213 M
+(  scale = s;) s
+24 202 M (37:) s
+48 202 M
+(  window_size = w_size;) s
+24 191 M (38:) s
+24 180 M (39:) s
+48 180 M
+(  if \(!image.loadFromFile\(filename\)\)) s
+24 169 M (40:) s
+48 169 M
+(  {) s
+24 158 M (41:) s
+48 158 M
+(    std::cout << "Failed to read file." << std::endl;) s
+24 147 M (42:) s
+48 147 M
+(  }) s
+24 136 M (43:) s
+48 136 M
+(  if \(!texture.loadFromImage\(image\)\)) s
+24 125 M (44:) s
+48 125 M
+(  {) s
+24 114 M (45:) s
+48 114 M
+(    std::cout << "Failed to read file." << std::endl;) s
+24 103 M (46:) s
+48 103 M
+(  }) s
+24 92 M (47:) s
+48 92 M
+(  sprite.setTexture\(texture\);) s
+24 81 M (48:) s
+48 81 M
+(}) s
+24 70 M (49:) s
+24 59 M (50:) s
+48 59 M
+(std::istream& operator>>\(std::istream& in, Body& arg\)) s
+24 48 M (51:) s
+48 48 M
+({) s
+24 37 M (52:) s
+48 37 M
+(  in >> arg.x_coordinate >> arg.y_coordinate >> arg.x_velocity >> arg.y_velo) s
+5 26 M
+(city >> arg.mass >> arg.filename;) s
+24 15 M (53:) s
+48 15 M
+(  if \(!arg.image.loadFromFile\(arg.filename\)\)) s
+24 4 M (54:) s
+48 4 M
+(  {) s
+_R
+S
+%%Page: (2) 2
+%%BeginPageSetup
+_S
+50 50 translate
+/pagenum 2 def
+/fname (body.cpp) def
+/fdir (.) def
+/ftail (body.cpp) def
+% User defined strings:
+/fmodstr (Mon Oct 16 18:51:43 2017) def
+/pagenumstr (2) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+24 664 M (55:) s
+48 664 M
+(    std::cout << "Failed to read file." << std::endl;) s
+24 653 M (56:) s
+48 653 M
+(  }) s
+24 642 M (57:) s
+48 642 M
+(  if \(!arg.texture.loadFromImage\(arg.image\)\)) s
+24 631 M (58:) s
+48 631 M
+(  {) s
+24 620 M (59:) s
+48 620 M
+(     std::cout << "Failed to read file." << std::endl;) s
+24 609 M (60:) s
+48 609 M
+(  }) s
+24 598 M (61:) s
+48 598 M
+(  arg.sprite.setTexture\(arg.texture\);) s
+24 587 M (62:) s
+48 587 M
+(  return in;) s
+24 576 M (63:) s
+48 576 M
+(}) s
+24 565 M (64:) s
+24 554 M (65:) s
+48 554 M
+(void Body::step\(std::vector<Body>& planets, unsigned int current_planet, dou) s
+5 543 M
+(ble delta_time\)) s
+24 532 M (66:) s
+48 532 M
+({) s
+24 521 M (67:) s
+48 521 M
+(  //Update planet) s
+24 510 M (68:) s
+48 510 M
+(  unsigned int i = 0;) s
+24 499 M (69:) s
+48 499 M
+(  while \(i < planets.size\(\)\)) s
+24 488 M (70:) s
+48 488 M
+(  {) s
+24 477 M (71:) s
+48 477 M
+(    //current planet is what we're trying to update, no need to) s
+24 466 M (72:) s
+48 466 M
+(    //have the same iteration number as it to modify itself) s
+24 455 M (73:) s
+48 455 M
+(    if \(current_planet != i\)) s
+24 444 M (74:) s
+48 444 M
+(    {) s
+24 433 M (75:) s
+48 433 M
+(      double hypotenuse = get_hypotenuse\(\(planets[i]\).get_x_coordinate\(\), \(p) s
+5 422 M
+(lanets[i]\).get_y_coordinate\(\)\);) s
+24 411 M (76:) s
+48 411 M
+(      double gravitational_force = get_gravitational_force\(planets[i].get_ma) s
+5 400 M
+(ss\(\), mass, hypotenuse\);) s
+24 389 M (77:) s
+24 378 M (78:) s
+48 378 M
+(      double netforce_x = get_netforce\(hypotenuse, gravitational_force, x_co) s
+5 367 M
+(ordinate, planets[i].get_x_coordinate\(\)\);) s
+24 356 M (79:) s
+48 356 M
+(      double netforce_y = get_netforce\(hypotenuse, gravitational_force, y_co) s
+5 345 M
+(ordinate, planets[i].get_y_coordinate\(\)\);) s
+24 334 M (80:) s
+24 323 M (81:) s
+48 323 M
+(      x_velocity += \(delta_time*netforce_x\)/mass;) s
+24 312 M (82:) s
+48 312 M
+(      y_velocity += \(delta_time*netforce_y\)/mass;) s
+24 301 M (83:) s
+48 301 M
+(    }) s
+24 290 M (84:) s
+48 290 M
+(    i++;) s
+24 279 M (85:) s
+48 279 M
+(  }) s
+24 268 M (86:) s
+48 268 M
+(  x_coordinate -= \(delta_time*x_velocity\);) s
+24 257 M (87:) s
+48 257 M
+(  y_coordinate -= \(delta_time*y_velocity\);) s
+24 246 M (88:) s
+24 235 M (89:) s
+48 235 M
+(  //We call this to update all the other planets after updating the first pl) s
+5 224 M
+(anet) s
+24 213 M (90:) s
+48 213 M
+(  if \(current_planet < planets.size\(\)\)) s
+24 202 M (91:) s
+48 202 M
+(  {) s
+24 191 M (92:) s
+48 191 M
+(    \(planets[current_planet+1]\).step\(planets, current_planet+1, delta_time\);) s
+24 180 M (93:) s
+48 180 M
+(  }) s
+24 169 M (94:) s
+48 169 M
+(}) s
+24 158 M (95:) s
+24 147 M (96:) s
+48 147 M
+(void Body::draw\(sf::RenderTarget& target, sf::RenderStates states\) const) s
+24 136 M (97:) s
+48 136 M
+({) s
+24 125 M (98:) s
+48 125 M
+(  sf::Sprite temp_sprite\(texture\);) s
+24 114 M (99:) s
+48 114 M
+(  double half_window_size = window_size/2;) s
+18 103 M (100:) s
+48 103 M
+(  double half_image_size_x = image.getSize\(\).x/2;) s
+18 92 M (101:) s
+48 92 M
+(  double half_image_size_y = image.getSize\(\).y/2;) s
+18 81 M (102:) s
+48 81 M
+(  double scaled_x = x_coordinate/scale;) s
+18 70 M (103:) s
+48 70 M
+(  double scaled_y = y_coordinate/scale;) s
+18 59 M (104:) s
+18 48 M (105:) s
+48 48 M
+(  int temp_x = half_window_size-half_image_size_x+\(scaled_x*half_window_size) s
+5 37 M
+(\);) s
+18 26 M (106:) s
+48 26 M
+(  int temp_y = half_window_size-half_image_size_y+\(scaled_y*half_window_size) s
+5 15 M
+(\);) s
+18 4 M (107:) s
+_R
+S
+%%Page: (3) 3
+%%BeginPageSetup
+_S
+50 50 translate
+/pagenum 3 def
+/fname (body.cpp) def
+/fdir (.) def
+/ftail (body.cpp) def
+% User defined strings:
+/fmodstr (Mon Oct 16 18:51:43 2017) def
+/pagenumstr (3) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+18 664 M (108:) s
+48 664 M
+(  temp_sprite.setPosition\(temp_x, temp_y\);) s
+18 653 M (109:) s
+48 653 M
+(  target.draw\(temp_sprite, states\);) s
+18 642 M (110:) s
+48 642 M
+(}) s
+_R
+S
+%%Trailer
+%%Pages: 3
+%%DocumentNeededResources: font Courier-Bold Courier 
+%%EOF
